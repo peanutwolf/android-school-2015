@@ -1,15 +1,20 @@
 package com.elegion.githubclient.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.elegion.githubclient.AppDelegate;
 import com.elegion.githubclient.R;
 import com.elegion.githubclient.api.ApiClient;
+import com.elegion.githubclient.utils.LoginAlertDialog;
+import com.elegion.githubclient.utils.OnClickDialogListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,11 +25,12 @@ import java.io.IOException;
 /**
  * @author Artem Mochalov.
  */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements OnClickDialogListener{
 
     private static final String SOME_ERROR = "SOME_ERROR";
     public static final String ACCESS_TOKEN_RESPONSE_KEY = "access_token";
     private boolean mDataSend = false;
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,11 @@ public class LoginActivity extends BaseActivity {
         webView.setHorizontalScrollBarEnabled(false);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(buildAuthUrl());
+    }
+
+    @Override
+    public void OnDialogClick(int i) {
+        logout();
     }
 
     private class AuthWebViewClient extends WebViewClient {
@@ -117,6 +128,9 @@ public class LoginActivity extends BaseActivity {
                         .executePost();
 
                 if (responseObject.optInt(ApiClient.STATUS_CODE) != ApiClient.STATUS_CODE_OK) {
+                    DialogFragment dialog = new LoginAlertDialog(LoginActivity.this);
+                    dialog.show(getSupportFragmentManager(), "LoginAlertFragment");
+                    return false;
                     //TODO: handle error
                 }
 

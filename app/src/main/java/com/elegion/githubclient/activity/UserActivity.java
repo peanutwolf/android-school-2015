@@ -2,6 +2,7 @@ package com.elegion.githubclient.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import com.elegion.githubclient.R;
 import com.elegion.githubclient.api.ApiClient;
 import com.elegion.githubclient.model.User;
+import com.elegion.githubclient.utils.LoginAlertDialog;
+import com.elegion.githubclient.utils.OnClickDialogListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -24,7 +27,7 @@ import java.io.IOException;
 /**
  * @author Artem Mochalov.
  */
-public class UserActivity extends BaseActivity implements View.OnClickListener {
+public class UserActivity extends BaseActivity implements View.OnClickListener, OnClickDialogListener {
 
     private Button mRepositoriesButton;
     private TextView mUserName;
@@ -84,6 +87,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void OnDialogClick(int i) {
+        logout();
+    }
+
     private class GetUserTask extends AsyncTask<Void, Void, User> {
 
         @Override
@@ -102,7 +110,9 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 int statusCode = responseObject.optInt(ApiClient.STATUS_CODE);
 
                 if (statusCode != ApiClient.STATUS_CODE_OK) {
-                    //TODO: handle error
+                    DialogFragment dialog = new LoginAlertDialog(UserActivity.this);
+                    dialog.show(getSupportFragmentManager(), "LoginAlertFragment");
+                    return null;
                 } else {
                     String userName = responseObject.optString("login");
                     String userAvatar = responseObject.optString("avatar_url");

@@ -6,4 +6,7 @@
     <string name="logout">Выйти</string>
     <string name="ab_my_repositories">Мои репозитории</string>
     <string name="ab_my_profile">Мой профиль</string>
+    <string name="dlg_login_alert_msg">Ошибка входа</string>
+    <string name="dlg_login_retry">Повтор</string>
+    <string name="dlg_login_cancel">Выход</string>
 </resources>
